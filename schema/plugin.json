@@ -1,0 +1,8 @@
+{
+  "jupyter.lab.shortcuts": [],
+  "title": "kernel_specs_panel",
+  "description": "kernel_specs_panel settings.",
+  "type": "object",
+  "properties": {},
+  "additionalProperties": false
+}
