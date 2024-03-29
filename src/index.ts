@@ -7,7 +7,7 @@ import { IRunningSessionManagers } from '@jupyterlab/running';
 import { consoleIcon, notebookIcon } from '@jupyterlab/ui-components';
 import { Signal } from '@lumino/signaling';
 
-const ITEM_CLASS = 'jp-RunningSessions-item';
+const ITEM_CLASS = 'jp-mod-kernel';
 
 class CustomPanelSignaler {
   constructor() {
@@ -25,13 +25,6 @@ class CustomPanelSignaler {
   private _runningChanged: Signal<this, void>;
 }
 
-/**
- * Add the custom running panel section to the running panel.
- *
- * @param managers - The IRunningSessionManagers used to register this section.
- * @param translator - The translator to use.
- * @param app - The JupyterFrontEnd application instance.
- */
 export async function addCustomRunningPanel(
   managers: IRunningSessionManagers,
   translator: ITranslator,
@@ -52,7 +45,9 @@ export async function addCustomRunningPanel(
           return {
             label: () => value.display_name,
             widget: null,
-            icon: () => iconUrl
+            icon: () => iconUrl,
+            context: key,
+            className: ITEM_CLASS
           };
         }
       );

@@ -2,6 +2,20 @@
   "jupyter.lab.shortcuts": [],
   "title": "kernel_specs_panel",
   "description": "kernel_specs_panel settings.",
+  "jupyter.lab.menus": {
+    "context": [
+      {
+        "command": "running:start-console",
+        "selector": ".jp-RunningSessions-item.jp-mod-kernel",
+        "rank": 0
+      },
+      {
+        "command": "running:start-notebook",
+        "selector": ".jp-RunningSessions-item.jp-mod-kernel",
+        "rank": 1
+      }
+    ]
+  },
   "type": "object",
   "properties": {},
   "additionalProperties": false
