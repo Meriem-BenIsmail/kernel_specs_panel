@@ -4,7 +4,6 @@ import {
 } from '@jupyterlab/application';
 import { ITranslator } from '@jupyterlab/translation';
 import { IRunningSessionManagers } from '@jupyterlab/running';
-//import { consoleIcon, notebookIcon } from '@jupyterlab/ui-components';
 import { Signal } from '@lumino/signaling';
 
 const ITEM_CLASS = 'jp-mod-kernel';
@@ -32,10 +31,9 @@ export async function addCustomRunningPanel(
   serviceManager: any
 ): Promise<void> {
   const trans = translator.load('jupyterlab');
-  const { /*commands, */ contextMenu } = app;
+  const { contextMenu } = app;
   const kernelspecs = serviceManager.kernelspecs.specs.kernelspecs;
   const signaler = new CustomPanelSignaler();
-
   managers.add({
     name: trans.__('Available Kernels'),
     running: () => {
@@ -60,37 +58,10 @@ export async function addCustomRunningPanel(
   });
 
   const test = (node: HTMLElement) => node.classList.contains(ITEM_CLASS);
-  /*
-  const startConsoleCommand = 'running:start-console';
-  const startNotebookCommand = 'running:start-notebook';
 
-  commands.addCommand(startConsoleCommand, {
-    icon: consoleIcon.bindprops({ stylesheet: 'menuItem' }),
-    label: trans.__('New Console for Kernel'),
-    execute: args => {
-      const node = app.contextMenuHitTest(test);
-      const id = node?.dataset['context'];
-      console.log('Console kernel ID:', id);
-      commands.execute('console:create', { kernelPreference: { id } });
-    }
-  });
-
-  commands.addCommand(startNotebookCommand, {
-    icon: notebookIcon.bindprops({ stylesheet: 'menuItem' }),
-    label: trans.__('New Notebook for Kernel'),
-    execute: args => {
-      const node = app.contextMenuHitTest(test);
-      console.log('Console node:', node);
-      const id = (args.id as string) ?? node?.dataset['context'];
-      console.log('Notebook kernel ID:', id);
-      if (id) {
-        return commands.execute('notebook:create-new', { kernelId: id });
-      }
-    }
-  });
-*/
   contextMenu.opened.connect(() => {
     const node = app.contextMenuHitTest(test);
+    console.log(node);
     const id = node?.dataset['context'];
     if (!id) {
       return;
