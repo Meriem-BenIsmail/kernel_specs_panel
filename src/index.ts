@@ -7,7 +7,7 @@ import { IRunningSessionManagers } from '@jupyterlab/running';
 import { consoleIcon, notebookIcon } from '@jupyterlab/ui-components';
 import { Signal } from '@lumino/signaling';
 
-const ITEM_CLASS = 'jp-mod-kernel';
+const ITEM_CLASS = 'jp-RunningSessions-item';
 
 class CustomPanelSignaler {
   constructor() {
@@ -96,6 +96,7 @@ export async function addCustomRunningPanel(
 
   contextMenu.opened.connect(() => {
     const node = app.contextMenuHitTest(test);
+    console.log(node);
     const id = node?.dataset['context'];
     console.log('Kernel ID:', id);
   });
