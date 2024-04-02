@@ -100,9 +100,7 @@ export async function addCustomRunningPanel(
       }
     }
   });
-  commands.addCommand('create-new-file', {
-    execute: async args => {}
-  });
+
   const submenuItems = Object.entries(kernelspecs).map(
     ([key, value]: [string, any]) => {
       const language =
@@ -123,6 +121,10 @@ export async function addCustomRunningPanel(
       };
     }
   );
+  commands.addCommand('create-new-file', {
+    icon: jupyterIcon,
+    execute: args => {}
+  });
   const submenu = new Menu({ commands });
   submenu.title.label = 'New File for Kernel';
   submenu.title.icon = jupyterIcon;
