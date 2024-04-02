@@ -23,7 +23,6 @@ class CustomPanelSignaler {
   emitRunningChanged(): void {
     this._runningChanged.emit(void 0);
   }
-
   private _runningChanged: Signal<this, void>;
 }
 
@@ -36,6 +35,8 @@ export async function addCustomRunningPanel(
   const trans = translator.load('jupyterlab');
   const { commands, contextMenu } = app;
   const kernelspecs = serviceManager.kernelspecs.specs.kernelspecs;
+  const { kernels } = serviceManager;
+
   const signaler = new CustomPanelSignaler();
   managers.add({
     name: trans.__('Available Kernels'),
@@ -49,16 +50,21 @@ export async function addCustomRunningPanel(
             widget: null,
             icon: () => iconUrl,
             context: key,
-            className: ITEM_CLASS
+            className: ITEM_CLASS,
+            disabled: true
           };
         }
       );
       return availableKernels;
     },
-
     refreshRunning: () => {},
     runningChanged: signaler.runningChanged,
-    shutdownAll: () => {}
+    shutdownAll: () => kernels.shutdownAll(),
+    shutdownLabel: trans.__('Shut Down Kernel'),
+    shutdownAllLabel: trans.__('Shut Down All'),
+    shutdownAllConfirmationText: trans.__(
+      'Are you sure you want to permanently shut down all running kernels?'
+    )
   });
 
   const test = (node: HTMLElement) => node.classList.contains(ITEM_CLASS);
