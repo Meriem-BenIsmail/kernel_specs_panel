@@ -5,11 +5,7 @@ import {
 import { ITranslator } from '@jupyterlab/translation';
 import { IRunningSessionManagers } from '@jupyterlab/running';
 import { Signal } from '@lumino/signaling';
-import {
-  consoleIcon,
-  notebookIcon,
-  jupyterIcon
-} from '@jupyterlab/ui-components';
+import { consoleIcon, notebookIcon, fileIcon } from '@jupyterlab/ui-components';
 import { EditorLanguageRegistry } from '@jupyterlab/codemirror';
 import { Menu } from '@lumino/widgets';
 
@@ -101,37 +97,48 @@ export async function addCustomRunningPanel(
     }
   });
 
-  const submenuItems = Object.entries(kernelspecs).map(
-    ([key, value]: [string, any]) => {
-      const language =
-        serviceManager.kernelspecs.specs.kernelspecs[key].language;
-      const defaultLanguages = EditorLanguageRegistry.getDefaultLanguages();
-      let fileExtensions: string[] | any;
+  Object.entries(kernelspecs).forEach(([key, value]: [string, any]) => {
+    const submenu = new Menu({ commands });
+    submenu.title.label = `${value.display_name} Files`;
+    submenu.title.icon = fileIcon;
 
-      defaultLanguages.forEach(item => {
-        if (item.name.toLocaleLowerCase() === language.toLocaleLowerCase()) {
-          fileExtensions = item.extensions;
+    const language = value.language;
+    const defaultLanguages = EditorLanguageRegistry.getDefaultLanguages();
+    const fileExtensions =
+      defaultLanguages.find(
+        item => item.name.toLowerCase() === language.toLowerCase()
+      )?.extensions ?? [];
+
+    fileExtensions.forEach(extension => {
+      const openFileCommand = `open-new-file-${key}-${extension}`;
+      commands.addCommand(openFileCommand, {
+        label: `${extension.toUpperCase()} File`,
+        icon: fileIcon,
+        execute: async () => {
+          try {
+            const model = await serviceManager.contents.newUntitled({
+              type: 'file',
+              path: '.',
+              ext: extension,
+              language: language
+            });
+
+            app.commands.execute('docmanager:open', {
+              path: model.path
+            });
+          } catch (error) {
+            console.error('Error creating untitled file:', error);
+          }
         }
       });
+      submenu.addItem({ command: openFileCommand });
+    });
 
-      return {
-        command: 'create-new-file',
-        args: { extensions: fileExtensions },
-        label: value.display_name
-      };
-    }
-  );
-  commands.addCommand('create-new-file', {
-    icon: jupyterIcon,
-    execute: args => {}
-  });
-  const submenu = new Menu({ commands });
-  submenu.title.label = 'New File for Kernel';
-  submenu.title.icon = jupyterIcon;
-  submenuItems.forEach(item => {
-    submenu.addItem({
-      command: item.command,
-      args: item.args
+    contextMenu.addItem({
+      type: 'submenu',
+      submenu,
+      selector: `.jp-mod-av-kernel[data-context="${key}"]`,
+      rank: 2
     });
   });
 
@@ -144,12 +151,6 @@ export async function addCustomRunningPanel(
     command: 'create-new-notebook',
     selector: '.jp-mod-av-kernel',
     rank: 1
-  });
-  contextMenu.addItem({
-    type: 'submenu',
-    submenu,
-    selector: '.jp-mod-av-kernel',
-    rank: 2
   });
 
   contextMenu.opened.connect(() => {
