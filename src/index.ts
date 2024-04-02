@@ -5,8 +5,15 @@ import {
 import { ITranslator } from '@jupyterlab/translation';
 import { IRunningSessionManagers } from '@jupyterlab/running';
 import { Signal } from '@lumino/signaling';
+import {
+  consoleIcon,
+  notebookIcon,
+  jupyterIcon
+} from '@jupyterlab/ui-components';
+import { EditorLanguageRegistry } from '@jupyterlab/codemirror';
+import { Menu } from '@lumino/widgets';
 
-const ITEM_CLASS = 'jp-mod-kernel';
+const ITEM_CLASS = 'jp-mod-av-kernel';
 
 class CustomPanelSignaler {
   constructor() {
@@ -31,7 +38,7 @@ export async function addCustomRunningPanel(
   serviceManager: any
 ): Promise<void> {
   const trans = translator.load('jupyterlab');
-  const { contextMenu } = app;
+  const { commands, contextMenu } = app;
   const kernelspecs = serviceManager.kernelspecs.specs.kernelspecs;
   const signaler = new CustomPanelSignaler();
   managers.add({
@@ -40,6 +47,7 @@ export async function addCustomRunningPanel(
       const availableKernels = Object.entries(kernelspecs).map(
         ([key, value]: [string, any]) => {
           const iconUrl = value.resources ? value.resources['logo-32x32'] : '';
+
           return {
             label: () => value.display_name,
             widget: null,
@@ -58,15 +66,96 @@ export async function addCustomRunningPanel(
   });
 
   const test = (node: HTMLElement) => node.classList.contains(ITEM_CLASS);
+  commands.addCommand('create-new-console', {
+    icon: consoleIcon,
+    label: trans.__('New Console for Kernel'),
+    execute: args => {
+      const node = app.contextMenuHitTest(test);
+      const id = (args.id as string) ?? node?.dataset['context'];
+      if (id) {
+        return commands.execute('console:create', {
+          kernelPreference: { name: id }
+        });
+      }
+    }
+  });
+  commands.addCommand('create-new-notebook', {
+    icon: notebookIcon,
+    label: trans.__('New Notebook for Kernel'),
+    execute: async args => {
+      const node = app.contextMenuHitTest(test);
+      const id = (args.id as string) ?? node?.dataset['context'];
+      if (id) {
+        const result = await app.commands.execute('docmanager:new-untitled', {
+          path: '.',
+          type: 'notebook'
+        });
+        await app.commands.execute('docmanager:open', {
+          path: result.path,
+          factory: 'Notebook',
+          kernel: {
+            name: id
+          }
+        });
+      }
+    }
+  });
+  commands.addCommand('create-new-file', {
+    execute: async args => {}
+  });
+  const submenuItems = Object.entries(kernelspecs).map(
+    ([key, value]: [string, any]) => {
+      const language =
+        serviceManager.kernelspecs.specs.kernelspecs[key].language;
+      const defaultLanguages = EditorLanguageRegistry.getDefaultLanguages();
+      let fileExtensions: string[] | any;
+
+      defaultLanguages.forEach(item => {
+        if (item.name.toLocaleLowerCase() === language.toLocaleLowerCase()) {
+          fileExtensions = item.extensions;
+        }
+      });
+
+      return {
+        command: 'create-new-file',
+        args: { extensions: fileExtensions },
+        label: value.display_name
+      };
+    }
+  );
+  const submenu = new Menu({ commands });
+  submenu.title.label = 'New File for Kernel';
+  submenu.title.icon = jupyterIcon;
+  submenuItems.forEach(item => {
+    submenu.addItem({
+      command: item.command,
+      args: item.args
+    });
+  });
+
+  contextMenu.addItem({
+    command: 'create-new-console',
+    selector: '.jp-mod-av-kernel',
+    rank: 0
+  });
+  contextMenu.addItem({
+    command: 'create-new-notebook',
+    selector: '.jp-mod-av-kernel',
+    rank: 1
+  });
+  contextMenu.addItem({
+    type: 'submenu',
+    submenu,
+    selector: '.jp-mod-av-kernel',
+    rank: 2
+  });
 
   contextMenu.opened.connect(() => {
     const node = app.contextMenuHitTest(test);
-    console.log(node);
     const id = node?.dataset['context'];
     if (!id) {
       return;
     }
-    console.log(id);
   });
 
   signaler.emitRunningChanged();
