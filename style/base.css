@@ -3,3 +3,15 @@
 
     https://jupyterlab.readthedocs.io/en/stable/developer/css.html
 */
+.kernel-spec-details {
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+}
+
+.kernel-spec-details div {
+  margin-bottom: 5px;
+}
+
+.kernel-spec-details strong {
+  font-weight: bold;
+}
