@@ -43,15 +43,23 @@ export async function addCustomRunningPanel(
     running: () => {
       const availableKernels = Object.entries(kernelspecs).map(
         ([key, value]: [string, any]) => {
-          const iconUrl = value.resources ? value.resources['logo-32x32'] : '';
+          let iconUrl: string;
+          if (value.resources) {
+            if (value.resources['logo-32x32']) {
+              iconUrl = value.resources['logo-32x32'];
+            } else if (value.resources['logo-64x64']) {
+              iconUrl = value.resources['logo-64x64'];
+            } else {
+              iconUrl = value.resources['logo-svg'];
+            }
+          }
 
           return {
             label: () => value.display_name,
             widget: null,
             icon: () => iconUrl,
             context: key,
-            className: ITEM_CLASS,
-            disabled: true
+            className: ITEM_CLASS
           };
         }
       );
@@ -114,11 +122,10 @@ export async function addCustomRunningPanel(
       defaultLanguages.find(
         item => item.name.toLowerCase() === language.toLowerCase()
       )?.extensions ?? [];
-
     fileExtensions.forEach(extension => {
       const openFileCommand = `open-new-file-${key}-${extension}`;
       commands.addCommand(openFileCommand, {
-        label: `${extension.toUpperCase()} File`,
+        label: `${extension} File`,
         icon: fileIcon,
         execute: async () => {
           try {
@@ -166,7 +173,6 @@ export async function addCustomRunningPanel(
       return;
     }
   });
-
   signaler.emitRunningChanged();
 }
 
