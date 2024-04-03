@@ -8,9 +8,12 @@ import { Signal } from '@lumino/signaling';
 import { consoleIcon, notebookIcon, fileIcon } from '@jupyterlab/ui-components';
 import { EditorLanguageRegistry } from '@jupyterlab/codemirror';
 import { Menu } from '@lumino/widgets';
+import { FileEditor, IEditorTracker } from '@jupyterlab/fileeditor';
+import { IConsoleTracker } from '@jupyterlab/console';
+import { WidgetTracker } from '@jupyterlab/apputils';
+import { IDocumentWidget } from '@jupyterlab/docregistry';
 
 const ITEM_CLASS = 'jp-mod-av-kernel';
-
 class CustomPanelSignaler {
   constructor() {
     this._runningChanged = new Signal<this, void>(this);
@@ -135,9 +138,12 @@ export async function addCustomRunningPanel(
               ext: extension,
               language: language
             });
-
             app.commands.execute('docmanager:open', {
               path: model.path
+            });
+            await app.commands.execute('console:create', {
+              kernelPreference: { name: key },
+              insertMode: 'split-bottom'
             });
           } catch (error) {
             console.error('Error creating untitled file:', error);
