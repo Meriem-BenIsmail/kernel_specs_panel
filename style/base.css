@@ -3,3 +3,56 @@
 
     https://jupyterlab.readthedocs.io/en/stable/developer/css.html
 */
+.kernel-spec-details {
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+}
+
+.kernel-spec-details div {
+  margin-bottom: 5px;
+}
+
+.kernel-spec-details strong {
+  font-weight: bold;
+}
+.kernel-header {
+  display: flex;
+  align-items: center;
+}
+
+.kernel-icon {
+  width: 40px;
+  height: 40px;
+  margin-right: 8px;
+}
+
+.kernel-display-name {
+  font-weight: bold;
+}
+
+.kernel-spec-details {
+  padding: 16px;
+}
+
+.details-section {
+  margin-bottom: 8px;
+}
+
+.object {
+  border: 1px solid #ccc;
+  padding: 8px;
+}
+
+.object-entry {
+  margin-bottom: 4px;
+}
+
+.array {
+  border: 1px solid #ccc;
+  padding: 8px;
+  margin-top: 5px;
+}
+
+.array-item {
+  margin-bottom: 4px;
+}

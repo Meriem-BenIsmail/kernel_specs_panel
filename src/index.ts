@@ -5,7 +5,14 @@ import {
 import { ITranslator } from '@jupyterlab/translation';
 import { IRunningSessionManagers } from '@jupyterlab/running';
 import { Signal } from '@lumino/signaling';
-import { consoleIcon, notebookIcon, fileIcon } from '@jupyterlab/ui-components';
+import { showKernelSpecDialog } from './kernelspec'; // Import the function
+
+import {
+  consoleIcon,
+  notebookIcon,
+  fileIcon,
+  jupyterIcon
+} from '@jupyterlab/ui-components';
 import { EditorLanguageRegistry } from '@jupyterlab/codemirror';
 import { Menu } from '@lumino/widgets';
 import { FileEditor, IEditorTracker } from '@jupyterlab/fileeditor';
@@ -113,6 +120,19 @@ export async function addCustomRunningPanel(
       }
     }
   });
+  commands.addCommand('display-kernelspec', {
+    icon: jupyterIcon,
+    label: trans.__('Display Kernel Specs'),
+    execute: async args => {
+      const node = app.contextMenuHitTest(test);
+      const id = (args.id as string) ?? node?.dataset['context'];
+      const kernelSpec = kernelspecs[id];
+
+      if (kernelSpec) {
+        showKernelSpecDialog(kernelSpec);
+      }
+    }
+  });
 
   Object.entries(kernelspecs).forEach(([key, value]: [string, any]) => {
     const submenu = new Menu({ commands });
@@ -171,6 +191,11 @@ export async function addCustomRunningPanel(
     selector: '.jp-mod-av-kernel',
     rank: 1
   });
+  contextMenu.addItem({
+    command: 'display-kernelspec',
+    selector: '.jp-mod-av-kernel',
+    rank: 3
+  });
 
   contextMenu.opened.connect(() => {
     const node = app.contextMenuHitTest(test);
@@ -192,6 +217,7 @@ const extension: JupyterFrontEndPlugin<void> = {
     translator: ITranslator
   ) => {
     const { serviceManager } = app;
+
     return addCustomRunningPanel(managers, translator, app, serviceManager);
   }
 };
