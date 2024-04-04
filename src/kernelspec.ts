@@ -34,7 +34,7 @@ function createKernelSpecDialogContent(kernelSpec: any): HTMLElement {
   return content;
 }
 
-function getKernelIconUrl(kernelSpec: any): string {
+export function getKernelIconUrl(kernelSpec: any): string {
   if (kernelSpec.resources) {
     return (
       kernelSpec.resources['logo-32x32'] ||

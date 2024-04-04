@@ -6,6 +6,7 @@ import { ITranslator } from '@jupyterlab/translation';
 import { IRunningSessionManagers } from '@jupyterlab/running';
 import { Signal } from '@lumino/signaling';
 import { showKernelSpecDialog } from './kernelspec'; // Import the function
+import { getKernelIconUrl } from './kernelspec'; // Import the function
 
 import {
   consoleIcon,
@@ -17,7 +18,6 @@ import { EditorLanguageRegistry } from '@jupyterlab/codemirror';
 import { Menu } from '@lumino/widgets';
 
 const ITEM_CLASS = 'jp-mod-av-kernel';
-
 class CustomPanelSignaler {
   constructor() {
     this._runningChanged = new Signal<this, void>(this);
@@ -50,16 +50,7 @@ export async function addCustomRunningPanel(
     running: () => {
       const availableKernels = Object.entries(kernelspecs).map(
         ([key, value]: [string, any]) => {
-          let iconUrl: string;
-          if (value.resources) {
-            if (value.resources['logo-32x32']) {
-              iconUrl = value.resources['logo-32x32'];
-            } else if (value.resources['logo-64x64']) {
-              iconUrl = value.resources['logo-64x64'];
-            } else {
-              iconUrl = value.resources['logo-svg'];
-            }
-          }
+          const iconUrl = getKernelIconUrl(kernelspecs[key]);
 
           return {
             label: () => value.display_name,
@@ -155,9 +146,12 @@ export async function addCustomRunningPanel(
               ext: extension,
               language: language
             });
-
             app.commands.execute('docmanager:open', {
               path: model.path
+            });
+            await app.commands.execute('console:create', {
+              kernelPreference: { name: key },
+              insertMode: 'split-bottom'
             });
           } catch (error) {
             console.error('Error creating untitled file:', error);
