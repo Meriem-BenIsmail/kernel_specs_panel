@@ -5,9 +5,8 @@ import {
 import { ITranslator } from '@jupyterlab/translation';
 import { IRunningSessionManagers } from '@jupyterlab/running';
 import { Signal } from '@lumino/signaling';
-import { showKernelSpecDialog } from './kernelspec'; // Import the function
-import { getKernelIconUrl } from './kernelspec'; // Import the function
-
+import { showKernelSpecDialog } from './kernelspec';
+import { getKernelIconUrl } from './kernelspec';
 import {
   consoleIcon,
   notebookIcon,
@@ -16,8 +15,8 @@ import {
 } from '@jupyterlab/ui-components';
 import { EditorLanguageRegistry } from '@jupyterlab/codemirror';
 import { Menu } from '@lumino/widgets';
-
 const ITEM_CLASS = 'jp-mod-av-kernel';
+
 class CustomPanelSignaler {
   constructor() {
     this._runningChanged = new Signal<this, void>(this);
@@ -65,7 +64,6 @@ export async function addCustomRunningPanel(
     refreshRunning: () => {},
     runningChanged: signaler.runningChanged,
     shutdownAll: () => {}
-    
   });
 
   const test = (node: HTMLElement) => node.classList.contains(ITEM_CLASS);
@@ -133,7 +131,7 @@ export async function addCustomRunningPanel(
       commands.addCommand(openFileCommand, {
         label: `${extension} File`,
         icon: fileIcon,
-        execute: async () => {
+        execute: async args => {
           try {
             const model = await serviceManager.contents.newUntitled({
               type: 'file',
@@ -143,6 +141,12 @@ export async function addCustomRunningPanel(
             });
             app.commands.execute('docmanager:open', {
               path: model.path
+            });
+            app.commands.execute('console:create', {
+              name: model.name,
+              path: model.path,
+              kernelPreference: { name: key },
+              ref: model.id
             });
           } catch (error) {
             console.error('Error creating untitled file:', error);
