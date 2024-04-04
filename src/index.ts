@@ -6,6 +6,7 @@ import { ITranslator } from '@jupyterlab/translation';
 import { IRunningSessionManagers } from '@jupyterlab/running';
 import { Signal } from '@lumino/signaling';
 import { showKernelSpecDialog } from './kernelspec'; // Import the function
+import { getKernelIconUrl } from './kernelspec'; // Import the function
 
 import {
   consoleIcon,
@@ -15,10 +16,6 @@ import {
 } from '@jupyterlab/ui-components';
 import { EditorLanguageRegistry } from '@jupyterlab/codemirror';
 import { Menu } from '@lumino/widgets';
-import { FileEditor, IEditorTracker } from '@jupyterlab/fileeditor';
-import { IConsoleTracker } from '@jupyterlab/console';
-import { WidgetTracker } from '@jupyterlab/apputils';
-import { IDocumentWidget } from '@jupyterlab/docregistry';
 
 const ITEM_CLASS = 'jp-mod-av-kernel';
 class CustomPanelSignaler {
@@ -53,16 +50,7 @@ export async function addCustomRunningPanel(
     running: () => {
       const availableKernels = Object.entries(kernelspecs).map(
         ([key, value]: [string, any]) => {
-          let iconUrl: string;
-          if (value.resources) {
-            if (value.resources['logo-32x32']) {
-              iconUrl = value.resources['logo-32x32'];
-            } else if (value.resources['logo-64x64']) {
-              iconUrl = value.resources['logo-64x64'];
-            } else {
-              iconUrl = value.resources['logo-svg'];
-            }
-          }
+          const iconUrl = getKernelIconUrl(kernelspecs[key]);
 
           return {
             label: () => value.display_name,
