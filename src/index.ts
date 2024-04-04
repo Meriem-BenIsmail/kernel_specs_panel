@@ -5,12 +5,8 @@ import {
 import { ITranslator } from '@jupyterlab/translation';
 import { IRunningSessionManagers } from '@jupyterlab/running';
 import { Signal } from '@lumino/signaling';
-import { showKernelSpecDialog } from './kernelspec'; // Import the function
-import { getKernelIconUrl } from './kernelspec'; // Import the function
-import { FileEditor } from '@jupyterlab/fileeditor';
-import { IDocumentWidget } from '@jupyterlab/docregistry';
-import { CommandRegistry } from '@lumino/commands';
-
+import { showKernelSpecDialog } from './kernelspec';
+import { getKernelIconUrl } from './kernelspec';
 import {
   consoleIcon,
   notebookIcon,
@@ -19,12 +15,7 @@ import {
 } from '@jupyterlab/ui-components';
 import { EditorLanguageRegistry } from '@jupyterlab/codemirror';
 import { Menu } from '@lumino/widgets';
-import { ReadonlyPartialJSONObject } from '@lumino/coreutils';
-import { WidgetTracker } from '@jupyterlab/apputils';
 const ITEM_CLASS = 'jp-mod-av-kernel';
-const tracker = new WidgetTracker<IDocumentWidget<FileEditor>>({
-  namespace: 'editor'
-});
 
 class CustomPanelSignaler {
   constructor() {
@@ -39,33 +30,6 @@ class CustomPanelSignaler {
     this._runningChanged.emit(void 0);
   }
   private _runningChanged: Signal<this, void>;
-}
-function getCreateConsoleFunction(
-  commands: CommandRegistry,
-  key: string
-): (
-  widget: IDocumentWidget<FileEditor>,
-  args?: ReadonlyPartialJSONObject
-) => Promise<void> {
-  return async function createConsole(
-    widget: IDocumentWidget<FileEditor>,
-    args?: ReadonlyPartialJSONObject
-  ): Promise<void> {
-    const options = args || {};
-    const console = await commands.execute('console:create', {
-      activate: options['activate'],
-      name: widget.context.contentsModel?.name,
-      path: widget.context.path,
-      kernelPreference: { name: key },
-      ref: widget.id,
-      insertMode: 'split-bottom'
-    });
-
-    widget.context.pathChanged.connect((sender, value) => {
-      console.session.setPath(value);
-      console.session.setName(widget.context.contentsModel?.name);
-    });
-  };
 }
 
 export async function addCustomRunningPanel(
@@ -178,13 +142,12 @@ export async function addCustomRunningPanel(
             app.commands.execute('docmanager:open', {
               path: model.path
             });
-            const widget = tracker.currentWidget;
-            console.log(tracker);
-            if (!widget) {
-              return;
-            }
-
-            return getCreateConsoleFunction(commands, key)(widget, args);
+            app.commands.execute('console:create', {
+              name: model.name,
+              path: model.path,
+              kernelPreference: { name: key },
+              ref: model.id
+            });
           } catch (error) {
             console.error('Error creating untitled file:', error);
           }
