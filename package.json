@@ -61,7 +61,10 @@
         "@jupyterlab/console": "^4.1.5",
         "@jupyterlab/fileeditor": "^4.1.5",
         "@jupyterlab/running": "^4.1.5",
-        "@jupyterlab/settingregistry": "^4.0.0"
+        "@jupyterlab/settingregistry": "^4.0.0",
+        "@jupyterlab/ui-components": "^4.1.5",
+        "@lumino/signaling": "^2.1.2",
+        "@lumino/widgets": "^2.3.2"
     },
     "devDependencies": {
         "@jupyterlab/builder": "^4.0.0",

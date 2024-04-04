@@ -12,7 +12,7 @@ import {
   consoleIcon,
   notebookIcon,
   fileIcon,
-  jupyterIcon
+  infoIcon
 } from '@jupyterlab/ui-components';
 import { EditorLanguageRegistry } from '@jupyterlab/codemirror';
 import { Menu } from '@lumino/widgets';
@@ -109,7 +109,7 @@ export async function addCustomRunningPanel(
     }
   });
   commands.addCommand('display-kernelspec', {
-    icon: jupyterIcon,
+    icon: infoIcon,
     label: trans.__('Display Kernel Specs'),
     execute: async args => {
       const node = app.contextMenuHitTest(test);
