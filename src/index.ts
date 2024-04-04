@@ -149,10 +149,6 @@ export async function addCustomRunningPanel(
             app.commands.execute('docmanager:open', {
               path: model.path
             });
-            await app.commands.execute('console:create', {
-              kernelPreference: { name: key },
-              insertMode: 'split-bottom'
-            });
           } catch (error) {
             console.error('Error creating untitled file:', error);
           }
