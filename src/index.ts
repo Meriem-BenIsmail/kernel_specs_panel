@@ -42,7 +42,6 @@ export async function addCustomRunningPanel(
   const trans = translator.load('jupyterlab');
   const { commands, contextMenu } = app;
   const kernelspecs = serviceManager.kernelspecs.specs.kernelspecs;
-  const { kernels } = serviceManager;
 
   const signaler = new CustomPanelSignaler();
   managers.add({
@@ -65,12 +64,8 @@ export async function addCustomRunningPanel(
     },
     refreshRunning: () => {},
     runningChanged: signaler.runningChanged,
-    shutdownAll: () => kernels.shutdownAll(),
-    shutdownLabel: trans.__('Shut Down Kernel'),
-    shutdownAllLabel: trans.__('Shut Down All'),
-    shutdownAllConfirmationText: trans.__(
-      'Are you sure you want to permanently shut down all running kernels?'
-    )
+    shutdownAll: () => {}
+    
   });
 
   const test = (node: HTMLElement) => node.classList.contains(ITEM_CLASS);
