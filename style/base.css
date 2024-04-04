@@ -15,3 +15,44 @@
 .kernel-spec-details strong {
   font-weight: bold;
 }
+.kernel-header {
+  display: flex;
+  align-items: center;
+}
+
+.kernel-icon {
+  width: 40px;
+  height: 40px;
+  margin-right: 8px;
+}
+
+.kernel-display-name {
+  font-weight: bold;
+}
+
+.kernel-spec-details {
+  padding: 16px;
+}
+
+.details-section {
+  margin-bottom: 8px;
+}
+
+.object {
+  border: 1px solid #ccc;
+  padding: 8px;
+}
+
+.object-entry {
+  margin-bottom: 4px;
+}
+
+.array {
+  border: 1px solid #ccc;
+  padding: 8px;
+  margin-top: 5px;
+}
+
+.array-item {
+  margin-bottom: 4px;
+}
