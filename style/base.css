@@ -56,3 +56,7 @@
 .array-item {
   margin-bottom: 4px;
 }
+
+span[title="Available Kernels"] + jp-toolbar .jp-ToolbarButton {
+  display: none;
+}
