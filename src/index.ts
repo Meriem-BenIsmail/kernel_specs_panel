@@ -67,6 +67,7 @@ export async function addCustomRunningPanel(
   });
 
   const test = (node: HTMLElement) => node.classList.contains(ITEM_CLASS);
+  /* command to start a console */
   commands.addCommand('create-new-console', {
     icon: consoleIcon,
     label: trans.__('New Console for Kernel'),
@@ -80,6 +81,7 @@ export async function addCustomRunningPanel(
       }
     }
   });
+  /* command to start a notebook */
   commands.addCommand('create-new-notebook', {
     icon: notebookIcon,
     label: trans.__('New Notebook for Kernel'),
@@ -101,6 +103,7 @@ export async function addCustomRunningPanel(
       }
     }
   });
+  /* command to dispaly the kernel specs */
   commands.addCommand('display-kernelspec', {
     icon: infoIcon,
     label: trans.__('Display Kernel Specs'),
@@ -115,6 +118,7 @@ export async function addCustomRunningPanel(
     }
   });
 
+  /* commands to start different files depending on the extension chosen */
   Object.entries(kernelspecs).forEach(([key, value]: [string, any]) => {
     const submenu = new Menu({ commands });
     submenu.title.label = `${value.display_name} Files`;
@@ -139,14 +143,14 @@ export async function addCustomRunningPanel(
               ext: extension,
               language: language
             });
-            app.commands.execute('docmanager:open', {
+            await app.commands.execute('docmanager:open', {
               path: model.path
             });
-            app.commands.execute('console:create', {
+            await app.commands.execute('console:create', {
               name: model.name,
               path: model.path,
               kernelPreference: { name: key },
-              ref: model.id
+              insertMode: 'split-bottom'
             });
           } catch (error) {
             console.error('Error creating untitled file:', error);
