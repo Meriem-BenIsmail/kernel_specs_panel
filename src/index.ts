@@ -118,7 +118,7 @@ export async function addCustomRunningPanel(
     }
   });
 
-  /* commands to start different files depending on the extension chosen */
+  /* commands to start different files depending on the extension chosen and opens a console*/
   Object.entries(kernelspecs).forEach(([key, value]: [string, any]) => {
     const submenu = new Menu({ commands });
     submenu.title.label = `${value.display_name} Files`;
